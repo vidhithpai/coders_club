@@ -59,16 +59,25 @@ router.post('/:id/submit', auth, async (req, res) => {
             const rank = solvedTodayQuery.size + 1; // 1-based rank
 
             // Points logic: 1st=100, 2nd=95, etc. Min 10.
-            let points =100 - (rank - 1) * 5;
-            if (points < 10) points = 10;
+            let pointsEarned = 100 - (rank - 1) * 5;
+            if (pointsEarned < 10) pointsEarned = 10;
+
+            // Get current points and add new points (cumulative)
+            const currentPoints = userData.pointsToday || 0;
+            const newTotalPoints = currentPoints + pointsEarned;
 
             await userRef.update({
                 solvedToday: true,
                 lastUpdated: new Date(),
-                pointsToday: points
+                pointsToday: newTotalPoints
             });
 
-            return res.json({ success: true, pointsToday: points, rank });
+            return res.json({ 
+                success: true, 
+                pointsEarned: pointsEarned,
+                pointsToday: newTotalPoints, 
+                rank 
+            });
         } else {
             return res.json({ success: false, message: "Use 'Safe Submit' only after solving on LeetCode." });
         }

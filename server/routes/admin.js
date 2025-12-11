@@ -31,23 +31,48 @@ router.post('/daily-problem', authAdmin, async (req, res) => {
             updatedAt: new Date()
         });
 
-        // Optional: Reset all users 'solvedToday' and 'pointsToday' when problem changes?
-        // Or create a separate 'reset-day' endpoint. 
-        // For this task, we'll assume the admin manually resets or we just set the problem.
-        // Let's implement a 'reset' flag in the body to clear daily stats.
-
-        if (req.body.resetDaily) {
-            const usersSnapshot = await db.collection('users').get();
-            const batch = db.batch();
-            usersSnapshot.docs.forEach(doc => {
-                batch.update(doc.ref, { solvedToday: false, pointsToday: 0 });
+        // Reset submission status for all users (but keep cumulative points)
+        // This allows users to submit for the new problem while preserving their total points
+        const usersSnapshot = await db.collection('users').get();
+        const batch = db.batch();
+        usersSnapshot.docs.forEach(doc => {
+            batch.update(doc.ref, { 
+                solvedToday: false,
+                lastUpdated: null
             });
-            await batch.commit();
-        }
+        });
+        await batch.commit();
 
-        res.json({ message: "Daily problem updated", slug });
+        res.json({ message: "Daily problem updated. Submission status reset for all users.", slug });
     } catch (error) {
         const handledError = handleFirestoreError(error, 'Admin daily problem update');
+        console.error(handledError);
+        if (error.code === 5 || error.code === 'NOT_FOUND') {
+            res.status(503).json({ error: "Firestore database not found. Please check server logs for setup instructions." });
+        } else {
+            res.status(500).json({ error: "Server error" });
+        }
+    }
+});
+
+// Reset Points Only (does not reset solvedToday or lastUpdated)
+router.post('/reset-points', authAdmin, async (req, res) => {
+    try {
+        const usersSnapshot = await db.collection('users').get();
+        const batch = db.batch();
+        let count = 0;
+        
+        usersSnapshot.docs.forEach(doc => {
+            batch.update(doc.ref, { pointsToday: 0 });
+            count++;
+        });
+        
+        await batch.commit();
+        
+        console.log(`Reset points for ${count} users`);
+        res.json({ message: `Reset points for ${count} users`, count });
+    } catch (error) {
+        const handledError = handleFirestoreError(error, 'Admin reset points');
         console.error(handledError);
         if (error.code === 5 || error.code === 'NOT_FOUND') {
             res.status(503).json({ error: "Firestore database not found. Please check server logs for setup instructions." });

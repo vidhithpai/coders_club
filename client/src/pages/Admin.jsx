@@ -13,13 +13,29 @@ const Admin = () => {
         const token = localStorage.getItem('token');
         try {
             await axios.post('http://localhost:5000/api/admin/daily-problem',
-                { slug, resetDaily },
+                { slug },
                 { headers: { 'x-auth-token': token } }
             );
-            setMessage('Daily problem updated successfully!');
+            setMessage('Daily problem updated successfully! Submission status reset for all users.');
             setSlug('');
         } catch (err) {
             setMessage('Error updating problem');
+            console.error(err);
+        }
+    };
+
+    const handleResetPoints = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.post('http://localhost:5000/api/admin/reset-points',
+                {},
+                { headers: { 'x-auth-token': token } }
+            );
+            console.log('Reset points for all users');
+            setMessage(`Successfully reset points for ${response.data.count} users`);
+            setResetDaily(false);
+        } catch (err) {
+            setMessage('Error resetting points');
             console.error(err);
         }
     };
@@ -63,19 +79,6 @@ const Admin = () => {
                             </p>
                         </div>
 
-                        <div className="flex items-center">
-                            <input
-                                id="reset-daily"
-                                type="checkbox"
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                                checked={resetDaily}
-                                onChange={(e) => setResetDaily(e.target.checked)}
-                            />
-                            <label htmlFor="reset-daily" className="ml-2 block text-sm text-gray-300">
-                                Reset daily points and submission status for all users?
-                            </label>
-                        </div>
-
                         <div className="pt-4">
                             <button
                                 type="submit"
@@ -86,6 +89,33 @@ const Admin = () => {
                             </button>
                         </div>
                     </form>
+
+                    <div className="mt-8 pt-8 border-t border-surface-hover">
+                        <h2 className="text-lg font-semibold mb-4">Reset Points</h2>
+                        <p className="text-sm text-gray-400 mb-4">
+                            Reset all users' points to 0. This will not affect submission status or last updated time.
+                        </p>
+                        <div className="flex items-center mb-4">
+                            <input
+                                id="reset-points"
+                                type="checkbox"
+                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                                checked={resetDaily}
+                                onChange={(e) => setResetDaily(e.target.checked)}
+                            />
+                            <label htmlFor="reset-points" className="ml-2 block text-sm text-gray-300">
+                                Reset daily points for all users?
+                            </label>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleResetPoints}
+                            disabled={!resetDaily}
+                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Reset Points
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
