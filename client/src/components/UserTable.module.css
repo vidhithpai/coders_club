@@ -1,0 +1,225 @@
+/* UserTable.module.css — pixel/neon leaderboard rows with manual internal scroll */
+
+/* Panel wrapper (outer card) */
+.panel {
+    width: 100%;
+    border-radius: 12px;
+    padding: 18px;
+    background: linear-gradient(180deg, rgba(6,12,18,0.7), rgba(10,16,22,0.92));
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow:
+      0 24px 60px rgba(0,0,0,0.65),
+      inset 0 1px 0 rgba(255,255,255,0.02);
+    overflow: visible;
+    position: relative;
+  }
+  
+  /* header (title centered above rows) */
+  .header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .title {
+    font-family: 'Press Start 2P', cursive;
+    color: #ffffff;
+    letter-spacing: 1px;
+    font-size: 18px;
+    text-transform: uppercase;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.6);
+  }
+  
+  /* rows container - manual scroll only when content exceeds max-height */
+  .rowsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+  
+    /* manual scroll threshold: if content taller than this, container will scroll */
+    max-height: 360px;   /* ~3 rows visible comfortably; tweak if needed */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px; /* space for inner band */
+    scroll-behavior: auto;
+  }
+  
+  /* Custom slim scrollbar to match theme */
+  .rowsContainer::-webkit-scrollbar {
+    width: 8px;
+  }
+  .rowsContainer::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .rowsContainer::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius: 999px;
+    border: 2px solid rgba(0,0,0,0.12);
+  }
+  
+  /* single row */
+  .row {
+    display: grid;
+    grid-template-columns: 84px 1fr 240px;
+    gap: 12px;
+    align-items: center;
+    padding: 18px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, rgba(8,12,16,0.45), rgba(12,18,24,0.45));
+    border: 1px solid rgba(255,255,255,0.02);
+    position: relative;
+    overflow: visible;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  
+  /* hover */
+  .row:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.65), 0 10px 30px rgba(6,231,224,0.03);
+  }
+  
+  /* left area: rank circle */
+  .left {
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .rankCircle {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(6,10,14,0.85), rgba(8,14,18,0.8));
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+  }
+  .rankNumber {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 26px;
+    color: #cfefff;
+    text-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  }
+  
+  /* center: name + handle */
+  .center { padding-left: 6px; }
+  .name {
+    font-weight: 800;
+    color: #ffffff;
+    font-size: 15px;
+  }
+  .handle {
+    margin-top: 6px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+  }
+  
+  /* right: points + status */
+  .right {
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap: 10px;
+  }
+  .points {
+    font-weight: 900;
+    color: #9ad3ff;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+  }
+  .pointsLabel {
+    color: rgba(255,255,255,0.35);
+    margin-left: 6px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  
+  /* status badges */
+  .statusWrap { display:flex; gap: 12px; align-items:center; }
+  .solved, .unsolved {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:999px;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .solved {
+    color: #2fe77f;
+    background: rgba(47,231,127,0.06);
+    border: 1px solid rgba(47,231,127,0.08);
+    box-shadow: 0 10px 30px rgba(47,231,127,0.03);
+  }
+  .unsolved {
+    color: #ff6b6b;
+    background: rgba(255,107,107,0.04);
+    border: 1px solid rgba(255,107,107,0.06);
+  }
+  
+  /* icon sizing */
+  .icon { width: 16px; height: 16px; }
+  
+  /* top-rank highlight */
+  .first {
+    border-color: rgba(255,207,91,0.18);
+    box-shadow: 0 28px 80px rgba(255,200,80,0.04), inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+  .first .rankCircle {
+    background: linear-gradient(180deg, rgba(255,210,90,0.12), rgba(255,200,70,0.05));
+  }
+  .first .rankNumber { color: #ffd25b; }
+  
+  /* second */
+  .second {
+    border-color: rgba(6,231,224,0.14);
+    box-shadow: 0 26px 72px rgba(6,231,224,0.03);
+  }
+  .second .rankCircle {
+    background: linear-gradient(180deg, rgba(6,231,224,0.08), rgba(8,150,160,0.03));
+  }
+  .second .rankNumber { color: #06e7e0; }
+  
+  /* right-side glow (band) for special ranks using ::after */
+  .first::after, .second::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 26%;
+    height: calc(100% - 24px);
+    border-radius: 8px;
+    pointer-events: none;
+    filter: blur(14px);
+    z-index: 1;
+    opacity: 0.95;
+  }
+
+  
+  /* current user highlight */
+  .me {
+    outline: 2px solid rgba(6,231,224,0.06);
+    box-shadow: 0 26px 70px rgba(6,231,224,0.04);
+  }
+  
+  /* responsive */
+  @media (max-width: 880px) {
+    .rowsContainer { max-height: none; overflow: visible; }
+    .row {
+      grid-template-columns: 64px 1fr;
+      padding: 12px;
+    }
+    .right { display: none; }
+    .first::after, .second::after { display: none; }
+    .panel { padding: 12px; }
+  }
+
+  /* Remove right-side glow/blur from each row */
+.row {
+    background: rgba(10, 14, 22, 0.75) !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+  }
+  

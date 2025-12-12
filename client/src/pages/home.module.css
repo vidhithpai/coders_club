@@ -1,0 +1,220 @@
+/* Home.module.css - scoped styles for Home page (pixel / neon) */
+
+/* Basic page wrap: keeps even spacing below fixed navbar */
+.pageWrap {
+    min-height: 100vh;
+    background: #07111a;
+    color: #e6f6fb;
+  }
+  
+  /* container to center content */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+    position: relative;
+    z-index: 5;
+  }
+  
+  /* subtle particle background (scoped) */
+  .particles {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(255,207,91,0.03), transparent 40%),
+      radial-gradient(circle at 85% 25%, rgba(20,225,234,0.02), transparent 40%);
+    background-size: 600px 400px, 400px 300px;
+    filter: blur(8px);
+  }
+  
+  /* Header region */
+  .headerWrap {
+    text-align: center;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 6;
+  }
+  .pixelTitle {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 48px;
+    color: #06e7e0; /* cyan title */
+    text-shadow: 0 6px 18px rgba(6,231,224,0.06), 0 3px 0 rgba(0,0,0,0.6);
+    margin: 6px 0 6px;
+  }
+  .subtitle {
+    color: rgba(255,255,255,0.65);
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  
+  /* DAILY PROBLEM CARD */
+  .problemCard {
+    margin: 18px 0 36px;
+    background: linear-gradient(90deg, rgba(6,12,16,0.8), rgba(12,20,28,0.9));
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    position: relative;
+    overflow: visible;
+    z-index: 4;
+  }
+  
+  .problemInner {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  /* left info */
+  .problemInfo {
+    flex: 1 1 60%;
+    min-width: 220px;
+  }
+  .problemTag {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #8bb7ff;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .problemTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .externalLink {
+    color: #7ad3ff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .externalIcon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* actions area (buttons) */
+  .problemActions {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 220px;
+  }
+  
+  .btnSolve {
+    background: linear-gradient(180deg, #ffd25b, #ffcf5b);
+    color: #07121a;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 12px 36px rgba(255,200,80,0.12), inset 0 -6px 12px rgba(0,0,0,0.12);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .btnSolve:hover { transform: translateY(-2px); }
+  
+  .btnSubmit {
+    background: linear-gradient(180deg, #06e7e0, #02dcd7);
+    color: #06121a;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 12px 36px rgba(6,231,224,0.14), inset 0 -6px 12px rgba(0,0,0,0.12);
+  }
+  .btnSubmit:hover { transform: translateY(-2px); }
+  
+  .solvedBadge {
+    background: rgba(34, 197, 94, 0.12);
+    color: #8ef2a6;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+  
+  /* verifying */
+  .verifying {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #ffbf6b;
+    background: rgba(255, 192, 80, 0.06);
+  }
+  
+  /* LEADERBOARD */
+  .leaderboardSection {
+    margin-top: 18px;
+  }
+  
+  .leaderHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .leaderTitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .leaderTag {
+    background: rgba(255,255,255,0.02);
+    color: rgba(255,255,255,0.6);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  
+  /* leaderboard card wrapper */
+  .leaderboardWrap {
+    position: relative;
+    z-index: 4;
+  }
+  /* REMOVE glow blur from leaderboard rows */
+.leaderboard-row {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+  /* table styles wrapper (the actual UserTable component will render a table) */
+  .tableWrap {
+    background: linear-gradient(180deg, rgba(12,18,26,0.94), rgba(10,16,22,0.96));
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.6);
+    padding: 6px;
+    overflow: hidden;
+  }
+  
+  /* mobile cards fallback */
+  .cardsWrap {
+    display: none;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 880px) {
+    .problemInner { flex-direction: column; align-items: stretch; }
+    .problemActions { justify-content: stretch; }
+    .cardsWrap { display: block; }
+    .tableWrap { display: none; }
+    .pixelTitle { font-size: 28px; }
+  }
+  
+  /* small utility to center loader */
+  .center { display:flex; align-items:center; justify-content:center; height:70vh; }
+  .loadingWrap { display:flex; align-items:center; justify-content:center; height:60vh; color: #06e7e0; }
+  

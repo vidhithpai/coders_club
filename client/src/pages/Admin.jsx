@@ -1,60 +1,74 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from '../components/NavBar';
-import { Settings, Save } from 'lucide-react';
+import { Settings, RefreshCw, Users, FileCheck } from 'lucide-react';
 import { API_BASE } from '../config';
+import styles from './admin.module.css'; // <-- IMPORTANT
 
 const Admin = () => {
     const [slug, setSlug] = useState('');
     const [resetDaily, setResetDaily] = useState(false);
     const [message, setMessage] = useState('');
-    const [stats, setStats] = useState({ totalUsers: 0, submittedToday: 0 });
+    const [stats, setStats] = useState({
+        totalUsers: 0,
+        submittedToday: 0
+    });
 
+    const token = localStorage.getItem('token');
+
+    // -----------------------------
+    // Set Daily Problem
+    // -----------------------------
     const handleUpdate = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
         try {
-            await axios.post(`${API_BASE}/api/admin/daily-problem`,
+            await axios.post(
+                `${API_BASE}/api/admin/daily-problem`,
                 { slug },
                 { headers: { 'x-auth-token': token } }
             );
-            setMessage('Daily problem updated successfully! Submission status reset for all users.');
+
+            setMessage('Daily problem updated successfully!');
             setSlug('');
+            fetchStats();
         } catch (err) {
-            setMessage('Error updating problem');
-            console.error(err);
+            setMessage('Error updating problem!');
         }
     };
 
+    // -----------------------------
+    // Reset Points
+    // -----------------------------
     const handleResetPoints = async () => {
-        const token = localStorage.getItem('token');
         try {
-            const response = await axios.post(`${API_BASE}/api/admin/reset-points`,
+            const res = await axios.post(
+                `${API_BASE}/api/admin/reset-points`,
                 {},
                 { headers: { 'x-auth-token': token } }
             );
-            console.log('Reset points for all users');
-            setMessage(`Successfully reset points for ${response.data.count} users`);
+
+            setMessage(`Reset points for ${res.data.count} users.`);
             setResetDaily(false);
         } catch (err) {
-            setMessage('Error resetting points');
-            console.error(err);
+            setMessage('Error resetting points.');
         }
     };
 
+    // -----------------------------
+    // Fetch Stats
+    // -----------------------------
     const fetchStats = async () => {
-        const token = localStorage.getItem('token');
         try {
-            const response = await axios.get(`${API_BASE}/api/admin/stats`, {
+            const res = await axios.get(`${API_BASE}/api/admin/stats`, {
                 headers: { 'x-auth-token': token }
             });
+
             setStats({
-                totalUsers: response.data.totalUsers || 0,
-                submittedToday: response.data.submittedToday || 0
+                totalUsers: res.data.totalUsers || 0,
+                submittedToday: res.data.submittedToday || 0
             });
         } catch (err) {
-            console.error(err);
-            setMessage('Error fetching stats');
+            console.log(err);
         }
     };
 
@@ -62,97 +76,125 @@ const Admin = () => {
         fetchStats();
     }, []);
 
+    // -----------------------------
+    // UI RENDER
+    // -----------------------------
     return (
-        <div className="min-h-screen bg-background text-white">
+        <>
             <NavBar />
-            <div className="max-w-3xl mx-auto px-4 py-10">
-                <div className="bg-surface border border-surface-hover rounded-xl p-8 shadow-2xl">
-                    <div className="flex items-center space-x-3 mb-6">
-                        <Settings className="w-8 h-8 text-secondary" />
-                        <h1 className="text-2xl font-bold">Admin Control Panel</h1>
+
+            <main className={styles.adminPage}>
+                <div className={styles.particles}></div>
+
+                <div className={styles.container}>
+                    {/* HEADER */}
+                    <h1 className={styles.header}>ADMIN DASHBOARD</h1>
+                    <div className={styles.headerUnderline}></div>
+
+                    {/* STATS GRID */}
+                    <div className={styles.statsGrid}>
+                        {/* USERS */}
+                        <div className={`${styles.statCard} ${styles.statCyan}`}>
+                            <div className={styles.statRightOverlay}></div>
+                            <div className="flex items-center gap-3">
+                                <Users size={22} className="text-cyan-400" />
+                                <span className="pixel-font text-xs text-cyan-400">
+                                    TOTAL USERS
+                                </span>
+                            </div>
+                            <div className={styles.statNumber}>
+                                {stats.totalUsers.toLocaleString()}
+                            </div>
+                        </div>
+
+                        {/* SUBMISSIONS */}
+                        <div className={`${styles.statCard} ${styles.statGold}`}>
+                            <div className={styles.statRightOverlay}></div>
+                            <div className="flex items-center gap-3">
+                                <FileCheck size={22} className="text-yellow-400" />
+                                <span className="pixel-font text-xs text-yellow-400">
+                                    TOTAL SUBMISSIONS TODAY
+                                </span>
+                            </div>
+                            <div className={styles.statNumber}>
+                                {stats.submittedToday.toLocaleString()}
+                            </div>
+                        </div>
                     </div>
 
+                    {/* STATUS MESSAGE */}
                     {message && (
-                        <div className={`p-4 mb-6 rounded-lg ${message.includes('Error') ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'}`}>
+                        <p className="text-center text-sm text-green-400 mb-4 pixel-font">
                             {message}
-                        </div>
+                        </p>
                     )}
 
-                    {/* Summary Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                        <div className="bg-gray-100 rounded-lg shadow p-4">
-                            <div className="font-semibold text-gray-700">Total Users</div>
-                            <div className="text-2xl font-bold text-blue-600">{stats.totalUsers}</div>
+                    {/* SET PROBLEM PANEL */}
+                    <div className={styles.panel}>
+                        <div className="flex items-center gap-2 mb-6">
+                            <Settings size={20} className="text-cyan-400" />
+                            <h2 className="pixel-font text-cyan-400 text-sm">
+                                SET NEW PROBLEM
+                            </h2>
                         </div>
-                        <div className="bg-gray-100 rounded-lg shadow p-4">
-                            <div className="font-semibold text-gray-700">Total Submissions Today</div>
-                            <div className="text-2xl font-bold text-blue-600">{stats.submittedToday}</div>
-                        </div>
-                    </div>
 
-                    <form onSubmit={handleUpdate} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">
-                                Daily Problem Slug
+                        <form onSubmit={handleUpdate}>
+                            <label className="pixel-font text-xs mb-2 block">
+                                Problem Slug
                             </label>
-                            <div className="flex rounded-md shadow-sm">
-                                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-surface-hover bg-surface-hover text-gray-400 sm:text-sm">
-                                    leetcode.com/problems/
-                                </span>
+
+                            <div className={styles.inputRow}>
                                 <input
                                     type="text"
-                                    required
-                                    className="flex-1 min-w-0 block w-full px-3 py-3 rounded-none rounded-r-md border border-surface-hover bg-background text-white focus:ring-primary focus:border-primary sm:text-sm"
-                                    placeholder="two-sum"
+                                    className={styles.input}
                                     value={slug}
+                                    placeholder="two-sum"
                                     onChange={(e) => setSlug(e.target.value)}
+                                    required
                                 />
+
+                                <button type="submit" className={styles.btnPrimary}>
+                                    SET PROBLEM
+                                </button>
                             </div>
-                            <p className="mt-1 text-xs text-gray-500">
-                                Copy the slug from the LeetCode URL (e.g., "two-sum" from leetcode.com/problems/two-sum)
-                            </p>
+                        </form>
+                    </div>
+
+                    {/* RESET POINTS PANEL */}
+                    <div className={styles.panel}>
+                        <div className="flex items-center gap-2 mb-6">
+                            <RefreshCw size={20} className="text-yellow-400" />
+                            <h2 className="pixel-font text-yellow-400 text-sm">
+                                RESET POINTS
+                            </h2>
                         </div>
 
-                        <div className="pt-4">
-                            <button
-                                type="submit"
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
-                            >
-                                <Save className="w-4 h-4 mr-2" />
-                                Set Daily Problem
-                            </button>
-                        </div>
-                    </form>
-
-                    <div className="mt-8 pt-8 border-t border-surface-hover">
-                        <h2 className="text-lg font-semibold mb-4">Reset Points</h2>
-                        <p className="text-sm text-gray-400 mb-4">
-                            Reset all users' points to 0. This will not affect submission status or last updated time.
+                        <p className="text-gray-300 text-sm mb-4">
+                            Reset all users' points to 0. This will not affect submission status or last update time.
                         </p>
-                        <div className="flex items-center mb-4">
+
+                        <div className="flex items-center gap-3 mb-4">
                             <input
-                                id="reset-points"
                                 type="checkbox"
-                                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
                                 checked={resetDaily}
                                 onChange={(e) => setResetDaily(e.target.checked)}
                             />
-                            <label htmlFor="reset-points" className="ml-2 block text-sm text-gray-300">
-                                Reset daily points for all users?
+                            <label className="text-sm">
+                                I confirm that I want to reset all user points to 0
                             </label>
                         </div>
+
                         <button
-                            type="button"
-                            onClick={handleResetPoints}
                             disabled={!resetDaily}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={handleResetPoints}
+                            className={styles.btnDanger}
                         >
-                            Reset Points
+                            RESET ALL POINTS
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </main>
+        </>
     );
 };
 

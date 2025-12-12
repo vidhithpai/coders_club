@@ -20,3 +20,92 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-surface-hover rounded-full;
 }
+
+/* src/index.css (append or merge) */
+
+/* Pixel font from Google - Press Start 2P for that retro pixel look */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* Main app background color and foreground */
+:root{
+  --app-bg: #0b1621;         /* deep navy/near black bg */
+  --card-bg: rgba(17,25,36,0.95); /* dark card */
+  --card-border: rgba(255,255,255,0.06);
+  --input-border: rgba(255,255,255,0.06);
+  --accent: #14e1ea;        /* cyan accent */
+  --pixel-gold: #ffcf5b;
+  --muted: rgba(255,255,255,0.35);
+  --deep-navy: #06121a;
+}
+
+/* helper classes used by component */
+.bg-app-bg { background-color: var(--app-bg); min-height: 100vh; }
+.bg-card-bg { background-color: var(--card-bg); }
+.border-card-border { border-color: var(--card-border); }
+.border-b-input { border-bottom-color: var(--input-border); }
+.text-pixel-gold { color: var(--pixel-gold); }
+.text-deep-navy { color: var(--deep-navy); }
+.text-muted { color: var(--muted); }
+.bg-accent { background-color: var(--accent); }
+.border-b-accent { border-bottom-color: var(--accent); }
+.pixel-font { font-family: 'Press Start 2P', cursive; letter-spacing: 0.04em; }
+
+/* subtle shadow on card */
+.shadow-card {
+  box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+}
+
+/* particles background (soft blobs) */
+.bg-particles {
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(255,200,104,0.03) 0px, transparent 40px),
+    radial-gradient(ellipse at 80% 40%, rgba(255,200,104,0.03) 0px, transparent 30px),
+    radial-gradient(ellipse at 50% 80%, rgba(20,225,234,0.02) 0px, transparent 45px),
+    radial-gradient(ellipse at 10% 70%, rgba(255,255,255,0.02) 0px, transparent 50px);
+  background-repeat: no-repeat;
+  background-size: 600px 400px, 300px 200px, 450px 350px, 350px 200px;
+  background-position: left top, right top, center bottom, left bottom;
+  filter: blur(6px);
+}
+
+/* small responsive tweaks */
+@media (max-width: 640px) {
+  .w-40 { width: 9rem; height: 9rem; } /* make logo smaller on mobile */
+  .rounded-2xl { border-radius: 12px; }
+}
+
+
+/* ------------------------------------------------------------------
+   Force topbar to the very top and make sure page content sits below
+   ------------------------------------------------------------------ */
+
+   .app-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;                 /* change if your topbar is taller */
+    background: linear-gradient(180deg, rgba(6,14,20,0.96), rgba(10,18,25,0.97));
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 9999;                /* very high so nothing covers it */
+  }
+  
+  /* Page container helper ensures main content starts below the fixed navbar */
+  .page-container {
+    padding-top: 96px;            /* 64px topbar + ~32px breathing room */
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-bottom: 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* small screens: reduce top padding so mobile looks OK */
+  @media (max-width: 640px) {
+    .page-container { padding-top: 84px; }
+  }
+

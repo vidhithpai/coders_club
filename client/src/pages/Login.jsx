@@ -1,77 +1,117 @@
-import { useState } from 'react';
+// src/pages/Login.jsx
+import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
-import { Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import logoImage from '../assets/logo.jpeg';
 import { API_BASE } from '../config';
 
-const Login = () => {
-    const [formData, setFormData] = useState({ email: '', password: '' });
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+export default function Login({ onNavigate } = {}) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await axios.post(`${API_BASE}/api/auth/login`, formData);
-            localStorage.setItem('token', res.data.token);
-            localStorage.setItem('role', res.data.role);
-            localStorage.setItem('name', res.data.name);
-            navigate('/');
-        } catch (err) {
-            setError(err.response?.data?.error || 'Login failed');
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_BASE}/api/auth/login`, { email, password });
+      localStorage.setItem('token', res.data.token);
+      if (res.data.role) localStorage.setItem('role', res.data.role);
+      if (res.data.name) localStorage.setItem('name', res.data.name);
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4">
-            <div className="max-w-md w-full space-y-8 bg-surface p-8 rounded-2xl shadow-xl border border-surface-hover">
-                <div className="text-center">
-                    <div className="mx-auto h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
-                        <Lock className="w-6 h-6" />
-                    </div>
-                    <h2 className="mt-6 text-3xl font-extrabold text-white">Welcome Back</h2>
-                    <p className="mt-2 text-sm text-gray-400">Sign in to track your progress</p>
-                </div>
-                {error && <div className="bg-red-500/10 text-red-500 p-3 rounded text-sm text-center">{error}</div>}
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="sr-only">Email address</label>
-                            <input
-                                type="email"
-                                required
-                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-surface-hover bg-background text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                                placeholder="Email address"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <label className="sr-only">Password</label>
-                            <input
-                                type="password"
-                                required
-                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-surface-hover bg-background text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            />
-                        </div>
-                    </div>
+      if (typeof onNavigate === 'function') onNavigate('home');
+      else navigate('/');
+    } catch (err) {
+      const msg = err?.response?.data?.error || err?.message || 'Login failed';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    <button
-                        type="submit"
-                        className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
-                    >
-                        Sign in
-                    </button>
-                </form>
-                <div className="text-center">
-                    <Link to="/register" className="text-sm text-primary hover:text-indigo-400">Don't have an account? Join now</Link>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center relative bg-app-bg text-foreground">
+      {/* subtle ambient particles / glow layer */}
+      <div className="absolute inset-0 pointer-events-none bg-particles opacity-30"></div>
+
+      <div className="z-10 w-full max-w-md px-6">
+        {/* logo */}
+        <div className="flex justify-center mb-8">
+          <img src={logoImage} alt="Coders Club Logo" className="w-40 h-40 object-contain" />
         </div>
-    );
-};
 
-export default Login;
+        {/* card */}
+        <div className="mx-auto bg-card-bg border border-card-border p-8 rounded-2xl shadow-card">
+          <h2 className="pixel-font text-center text-pixel-gold uppercase tracking-wider text-lg mb-6">
+            Welcome Back
+          </h2>
+
+          {error && (
+            <div className="bg-red-500/10 text-red-400 p-3 rounded text-sm text-center mb-4">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* email */}
+            <div>
+              <label htmlFor="email" className="block text-xs text-muted mb-2 uppercase tracking-wider">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter email"
+                required
+                className="w-full bg-transparent border-b border-b-input px-0 py-2 text-foreground placeholder:text-muted focus:outline-none focus:border-b-accent transition-colors"
+              />
+            </div>
+
+            {/* password */}
+            <div>
+              <label htmlFor="password" className="block text-xs text-muted mb-2 uppercase tracking-wider">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                required
+                className="w-full bg-transparent border-b border-b-input px-0 py-2 text-foreground placeholder:text-muted focus:outline-none focus:border-b-accent transition-colors"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-6 bg-accent px-6 py-3 pixel-font text-sm text-deep-navy hover:bg-accent/90 transition-colors flex items-center justify-center gap-2 rounded-sm"
+            >
+              {loading ? 'PLEASE WAIT...' : 'ENTER'}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => {
+                if (typeof onNavigate === 'function') onNavigate('signup');
+                else navigate('/register');
+              }}
+              className="text-xs text-muted hover:text-accent transition-colors"
+            >
+              Don't have an account? Join now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

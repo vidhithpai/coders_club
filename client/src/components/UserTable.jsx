@@ -1,59 +1,79 @@
-import { CheckCircle, Clock } from 'lucide-react';
+import React from 'react';
+import { CheckCircle, XCircle } from 'lucide-react';
+import styles from './UserTable.module.css';
 
+/**
+ * UserTable
+ * Props:
+ *  - users: array of user objects (each: id, name, leetcodeUsername, pointsToday, solvedToday, role)
+ *  - currentUserId: id of the logged-in user (to highlight row)
+ */
 const UserTable = ({ users = [], currentUserId }) => {
-    // Filter out admin accounts as a safety measure (backend should already filter)
-    const filteredUsers = users.filter(user => user.role !== 'admin');
-    
-    return (
-        <div className="overflow-hidden rounded-xl border border-surface-hover bg-surface/50 shadow-xl backdrop-blur-sm">
-            <table className="min-w-full divide-y divide-surface-hover">
-                <thead className="bg-surface">
-                    <tr>
-                        <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Rank</th>
-                        <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Coder</th>
-                        <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                        <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Points</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-surface-hover">
-                    {filteredUsers.map((user, index) => {
-                        const isMe = user.id === currentUserId;
-                        return (
-                            <tr key={user.id} className={isMe ? 'bg-primary/5 hover:bg-primary/10 transition-colors' : 'hover:bg-surface-hover/30 transition-colors'}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full ${index < 3 ? 'bg-yellow-500/10 text-yellow-500 font-bold' : 'text-gray-500'}`}>
-                                        {index + 1}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex flex-col">
-                                        <span className={`text-sm font-medium ${isMe ? 'text-white' : 'text-gray-200'}`}>{user.name}</span>
-                                        <span className="text-xs text-gray-500">@{user.leetcodeUsername}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    {user.solvedToday ? (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400">
-                                            <CheckCircle className="w-3 h-3 mr-1" />
-                                            Done
-                                        </span>
-                                    ) : (
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-400">
-                                            <Clock className="w-3 h-3 mr-1" />
-                                            --
-                                        </span>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-secondary">
-                                    {user.pointsToday}
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-        </div>
-    );
+  const filteredUsers = (users || []).filter(u => u.role !== 'admin');
+
+  const fmt = (v) => {
+    if (v == null) return '0';
+    return Number(v).toLocaleString();
+  };
+
+  return (
+    <div className={styles.panel}>
+      <div className={styles.header}>
+        <div className={styles.title}>LEADERBOARD</div>
+      </div>
+
+      {/* Scrollable rows container (manual scroll only) */}
+      <div className={styles.rowsContainer} role="list" aria-label="Leaderboard rows">
+        {filteredUsers.map((user, idx) => {
+          const rank = idx + 1;
+          const isMe = user.id === currentUserId;
+          const solved = !!user.solvedToday;
+
+          const classes = [
+            styles.row,
+            rank === 1 ? styles.first : '',
+            rank === 2 ? styles.second : '',
+            isMe ? styles.me : ''
+          ].join(' ');
+
+          return (
+            <div key={user.id} className={classes} role="listitem" tabIndex={0}>
+              <div className={styles.left}>
+                <div className={styles.rankCircle}>
+                  <span className={styles.rankNumber}>{rank}</span>
+                </div>
+              </div>
+
+              <div className={styles.center}>
+                <div className={styles.name}>{user.name}</div>
+                <div className={styles.handle}>@{user.leetcodeUsername}</div>
+              </div>
+
+              <div className={styles.right}>
+                <div className={styles.points}>
+                  {fmt(user.pointsToday ?? 0)} <span className={styles.pointsLabel}>PTS</span>
+                </div>
+
+                <div className={styles.statusWrap}>
+                  {solved ? (
+                    <div className={styles.solved}>
+                      <CheckCircle className={styles.icon} />
+                      <span>SOLVED</span>
+                    </div>
+                  ) : (
+                    <div className={styles.unsolved}>
+                      <XCircle className={styles.icon} />
+                      <span>UNSOLVED</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default UserTable;
