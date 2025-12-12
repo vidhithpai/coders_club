@@ -4,6 +4,7 @@ import NavBar from '../components/NavBar';
 import UserTable from '../components/UserTable';
 import UserCard from '../components/UserCard';
 import { ExternalLink, Loader2 } from 'lucide-react';
+import { API_BASE } from '../config';
 
 const Home = () => {
     const [loading, setLoading] = useState(true);
@@ -32,7 +33,7 @@ const Home = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const res = await axios.get('http://localhost:5000/api/users');
+            const res = await axios.get(`${API_BASE}/api/users`);
             // Filter out any admin accounts as a safety measure (backend should already filter)
             const filteredUsers = (res.data.users || []).filter(user => user.role !== 'admin');
             setUsers(filteredUsers);
@@ -57,7 +58,7 @@ const Home = () => {
         setSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/users/${currentUserId}/submit`, {}, {
+            const res = await axios.post(`${API_BASE}/api/users/${currentUserId}/submit`, {}, {
                 headers: { 'x-auth-token': token }
             });
 
