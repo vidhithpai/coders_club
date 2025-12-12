@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from '../components/NavBar';
 import { Settings, Save } from 'lucide-react';
+import { API_BASE } from '../config';
 
 const Admin = () => {
     const [slug, setSlug] = useState('');
@@ -13,7 +14,7 @@ const Admin = () => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            await axios.post('http://localhost:5000/api/admin/daily-problem',
+            await axios.post(`${API_BASE}/api/admin/daily-problem`,
                 { slug },
                 { headers: { 'x-auth-token': token } }
             );
@@ -28,7 +29,7 @@ const Admin = () => {
     const handleResetPoints = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.post('http://localhost:5000/api/admin/reset-points',
+            const response = await axios.post(`${API_BASE}/api/admin/reset-points`,
                 {},
                 { headers: { 'x-auth-token': token } }
             );
@@ -44,7 +45,7 @@ const Admin = () => {
     const fetchStats = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.get('http://localhost:5000/api/admin/stats', {
+            const response = await axios.get(`${API_BASE}/api/admin/stats`, {
                 headers: { 'x-auth-token': token }
             });
             setStats({
