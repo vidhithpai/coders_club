@@ -7,11 +7,16 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: "#4F46E5", // Indigo-600
-                secondary: "#9333EA", // Purple-600
+                primary: "#3b82f6", // Blue-500
+                "primary-glow": "rgba(59, 130, 246, 0.5)",
+                secondary: "#a855f7", // Purple-500
                 background: "#0F172A", // Slate-900
                 surface: "#1E293B", // Slate-800
                 "surface-hover": "#334155", // Slate-700
+                "main": "#f8fafc",
+                "muted": "#94a3b8",
+                "border-color": "#334155",
+                "success-color": "#22c55e",
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],

@@ -78,7 +78,7 @@ const Home = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background text-white pb-10">
+        <div className="min-h-screen text-main pb-10">
             <NavBar />
 
             {error && (
@@ -92,11 +92,11 @@ const Home = () => {
                 {/* Header Section */}
                 <div className="text-center mb-10">
                     <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">
-                        <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                             Daily Challenge
                         </span>
                     </h1>
-                    <p className="text-gray-400 max-w-2xl mx-auto">
+                    <p className="text-muted max-w-2xl mx-auto">
                         Solve the LeetCode problem of the day and race to the top of the leaderboard.
                     </p>
                 </div>
@@ -108,7 +108,7 @@ const Home = () => {
                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between">
                         <div>
                             <h2 className="text-sm font-semibold text-primary uppercase tracking-widest mb-1">Today's Target</h2>
-                            <div className="text-2xl md:text-3xl font-bold text-white mb-2">
+                            <div className="text-2xl md:text-3xl font-bold text-main mb-2">
                                 {dailyProblem?.title || "Waiting for Problem..."}
                             </div>
                             {dailyProblem?.slug && dailyProblem.slug !== "Not set" && (
@@ -116,7 +116,7 @@ const Home = () => {
                                     href={`https://leetcode.com/problems/${dailyProblem.slug}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+                                    className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
                                 >
                                     View on LeetCode <ExternalLink className="w-4 h-4 ml-1" />
                                 </a>
@@ -134,8 +134,8 @@ const Home = () => {
 
                 {/* Leaderboard Section */}
                 <div className="mb-6">
-                    <h2 className="text-xl font-bold mb-4 flex items-center">
-                        Leaderboard <span className="ml-2 text-xs font-normal text-gray-500 bg-surface px-2 py-0.5 rounded">Top {users.length}</span>
+                    <h2 className="text-xl font-bold mb-4 flex items-center text-main">
+                        Leaderboard <span className="ml-2 text-xs font-normal text-muted bg-surface px-2 py-0.5 rounded">Top {users.length}</span>
                     </h2>
 
                     {/* Desktop Table */}

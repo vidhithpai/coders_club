@@ -22,14 +22,14 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4">
-            <div className="max-w-md w-full space-y-8 bg-surface p-8 rounded-2xl shadow-xl border border-surface-hover">
+        <div className="min-h-screen flex items-center justify-center px-4">
+            <div className="max-w-md w-full space-y-8 bg-surface p-8 rounded-2xl shadow-xl border border-border-color">
                 <div className="text-center">
                     <div className="mx-auto h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
                         <Lock className="w-6 h-6" />
                     </div>
-                    <h2 className="mt-6 text-3xl font-extrabold text-white">Welcome Back</h2>
-                    <p className="mt-2 text-sm text-gray-400">Sign in to track your progress</p>
+                    <h2 className="mt-6 text-3xl font-extrabold text-main">Welcome Back</h2>
+                    <p className="mt-2 text-sm text-muted">Sign in to track your progress</p>
                 </div>
                 {error && <div className="bg-red-500/10 text-red-500 p-3 rounded text-sm text-center">{error}</div>}
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -39,7 +39,7 @@ const Login = () => {
                             <input
                                 type="email"
                                 required
-                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-surface-hover bg-background text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-surface-hover bg-background text-main placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                 placeholder="Email address"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -50,7 +50,7 @@ const Login = () => {
                             <input
                                 type="password"
                                 required
-                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-surface-hover bg-background text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-surface-hover bg-background text-main placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                 placeholder="Password"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -60,13 +60,13 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
                     >
                         Sign in
                     </button>
                 </form>
                 <div className="text-center">
-                    <Link to="/register" className="text-sm text-primary hover:text-indigo-400">Don't have an account? Join now</Link>
+                    <Link to="/register" className="text-sm text-primary hover:text-primary/80">Don't have an account? Join now</Link>
                 </div>
             </div>
         </div>
