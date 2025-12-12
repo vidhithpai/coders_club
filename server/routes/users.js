@@ -51,12 +51,19 @@ router.post('/:id/submit', auth, async (req, res) => {
 
         if (isSolved) {
             // Calculate Points
-            // We need to count how many have solved today to determine rank/points
+            // We need to count how many users (not admins) have solved today to determine rank/points
             // This is a naive approach; strictly we should use a transaction or atomic increment, 
             // but for simplicity query count is okay for small scale.
 
-            const solvedTodayQuery = await db.collection('users').where('solvedToday', '==', true).get();
-            const rank = solvedTodayQuery.size + 1; // 1-based rank
+            const solvedTodayQuery = await db.collection('users')
+                .where('solvedToday', '==', true)
+                .get();
+            // Filter to only count users (exclude admins) to avoid composite index requirement
+            const solvedUsersCount = solvedTodayQuery.docs.filter(doc => {
+                const data = doc.data();
+                return data.role !== 'admin';
+            }).length;
+            const rank = solvedUsersCount + 1; // 1-based rank
 
             // Points logic: 1st=100, 2nd=95, etc. Min 10.
             let pointsEarned = 100 - (rank - 1) * 5;
@@ -98,8 +105,8 @@ router.post('/:id/submit', auth, async (req, res) => {
 // Get Leaderboard
 router.get('/', async (req, res) => {
     try {
-        // Fetch all users (no ordering to avoid composite index requirement)
-        const snapshot = await db.collection('users').get();
+        // Fetch only users with role == "user" (exclude admins)
+        const snapshot = await db.collection('users').where('role', '==', 'user').get();
 
         const users = [];
         snapshot.forEach(doc => {
@@ -110,17 +117,22 @@ router.get('/', async (req, res) => {
                 leetcodeUsername: data.leetcodeUsername,
                 pointsToday: data.pointsToday || 0,
                 solvedToday: data.solvedToday || false,
+                role: data.role || 'user', // Include role for frontend filtering
                 lastUpdated: data.lastUpdated?.toDate ? data.lastUpdated.toDate() : (data.lastUpdated || new Date(0))
             });
         });
 
-        // Sort in memory: Primary by pointsToday (desc), secondary by lastUpdated (asc - earlier = better rank)
+        // Sort in memory: Primary by pointsToday (desc), secondary by lastUpdated (asc - earlier = better rank), tertiary by name (asc)
         users.sort((a, b) => {
             if (b.pointsToday !== a.pointsToday) {
                 return b.pointsToday - a.pointsToday; // Higher points first
             }
             // If points are equal, earlier submission wins
-            return a.lastUpdated.getTime() - b.lastUpdated.getTime();
+            if (a.lastUpdated.getTime() !== b.lastUpdated.getTime()) {
+                return a.lastUpdated.getTime() - b.lastUpdated.getTime();
+            }
+            // If points and lastUpdated are equal, sort by name (ascending)
+            return a.name.localeCompare(b.name);
         });
 
         // Remove lastUpdated from response (not needed by frontend)

@@ -15,9 +15,15 @@ router.post('/register', async (req, res) => {
 
         // Check if user exists
         const usersRef = db.collection('users');
-        const snapshot = await usersRef.where('email', '==', email).get();
-        if (!snapshot.empty) {
+        const emailSnapshot = await usersRef.where('email', '==', email).get();
+        if (!emailSnapshot.empty) {
             return res.status(400).json({ error: "User already exists" });
+        }
+
+        // Check if LeetCode username already exists
+        const leetcodeSnapshot = await usersRef.where('leetcodeUsername', '==', leetcodeUsername).get();
+        if (!leetcodeSnapshot.empty) {
+            return res.status(400).json({ error: "LeetCode username already taken." });
         }
 
         const salt = await bcrypt.genSalt(10);

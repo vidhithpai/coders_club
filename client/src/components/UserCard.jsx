@@ -1,6 +1,11 @@
-import { Trophy, CheckCircle, Clock } from 'lucide-react';
+import { CheckCircle, Clock } from 'lucide-react';
 
-const UserCard = ({ user, rank, currentUserId, onSafeSubmit }) => {
+const UserCard = ({ user, rank, currentUserId }) => {
+    // Filter out admin accounts as a safety measure (backend should already filter)
+    if (user.role === 'admin') {
+        return null;
+    }
+    
     const isMe = user.id === currentUserId;
 
     return (
@@ -29,14 +34,6 @@ const UserCard = ({ user, rank, currentUserId, onSafeSubmit }) => {
                         <span className="flex items-center text-gray-500"><Clock className="w-4 h-4 mr-1" /> Pending</span>
                     )}
                 </div>
-                {isMe && !user.solvedToday && (
-                    <button
-                        onClick={onSafeSubmit}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-lg shadow-green-900/20"
-                    >
-                        Check & Submit
-                    </button>
-                )}
             </div>
         </div>
     );

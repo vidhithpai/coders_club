@@ -33,7 +33,9 @@ const Home = () => {
         try {
             setLoading(true);
             const res = await axios.get('http://localhost:5000/api/users');
-            setUsers(res.data.users || []);
+            // Filter out any admin accounts as a safety measure (backend should already filter)
+            const filteredUsers = (res.data.users || []).filter(user => user.role !== 'admin');
+            setUsers(filteredUsers);
             setDailyProblem(res.data.dailyProblem || null);
         } catch (err) {
             console.error(err);
@@ -48,7 +50,10 @@ const Home = () => {
     }, []);
 
     const handleSafeSubmit = async () => {
-        if (!currentUserId) return;
+        if (!currentUserId) {
+            console.log("No user logged in");
+            return;
+        }
         setSubmitting(true);
         try {
             const token = localStorage.getItem('token');
@@ -57,17 +62,26 @@ const Home = () => {
             });
 
             if (res.data.success) {
-                alert(`Congrats! You earned ${res.data.pointsToday} points.`);
+                alert("Submission verified and points updated.");
                 fetchData(); // Refresh list
             } else {
-                alert(res.data.message || "Verification failed. Did you solve the corect problem?");
+                alert("No accepted submission found for today's problem.");
             }
         } catch (err) {
-            alert(err.response?.data?.message || err.response?.data?.error || "Submission error");
+            const errorMsg = err.response?.data?.message || err.response?.data?.error || "Submission error";
+            if (errorMsg.includes("already solved") || errorMsg.includes("Already solved")) {
+                console.log("Submission verified and points updated.");
+            } else {
+                console.log("No accepted submission found for today's problem.");
+            }
         } finally {
             setSubmitting(false);
         }
     };
+
+    // Get current user's solved status
+    const currentUser = users.find(user => user.id === currentUserId);
+    const hasSolvedToday = currentUser?.solvedToday || false;
 
     if (loading) {
         return (
@@ -105,8 +119,8 @@ const Home = () => {
                 <div className="bg-gradient-to-br from-surface to-surface-hover rounded-2xl p-6 mb-10 shadow-2xl border border-white/10 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-32 -mt-32"></div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between">
-                        <div>
+                    <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex-1">
                             <h2 className="text-sm font-semibold text-primary uppercase tracking-widest mb-1">Today's Target</h2>
                             <div className="text-2xl md:text-3xl font-bold text-white mb-2">
                                 {dailyProblem?.title || "Waiting for Problem..."}
@@ -123,12 +137,24 @@ const Home = () => {
                             )}
                         </div>
 
-                        {submitting && (
-                            <div className="mt-4 md:mt-0 flex items-center text-yellow-400 bg-yellow-400/10 px-4 py-2 rounded-lg">
-                                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                                Verifying Solution...
-                            </div>
-                        )}
+                        <div className="w-full sm:w-auto flex items-center gap-3">
+                            {submitting ? (
+                                <div className="flex items-center text-yellow-400 bg-yellow-400/10 px-4 py-2 rounded-lg">
+                                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                                    Verifying Solution...
+                                </div>
+                            ) : (
+                                currentUserId && !hasSolvedToday && (
+                                    <button
+                                        onClick={handleSafeSubmit}
+                                        disabled={submitting}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded w-full sm:w-auto transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Check & Submit
+                                    </button>
+                                )
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -140,7 +166,7 @@ const Home = () => {
 
                     {/* Desktop Table */}
                     <div className="hidden sm:block">
-                        <UserTable users={users} currentUserId={currentUserId} onSafeSubmit={handleSafeSubmit} />
+                        <UserTable users={users} currentUserId={currentUserId} />
                     </div>
 
                     {/* Mobile Cards */}
@@ -151,7 +177,6 @@ const Home = () => {
                                 user={user}
                                 rank={index + 1}
                                 currentUserId={currentUserId}
-                                onSafeSubmit={handleSafeSubmit}
                             />
                         ))}
                     </div>

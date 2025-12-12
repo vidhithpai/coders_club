@@ -1,6 +1,9 @@
 import { CheckCircle, Clock } from 'lucide-react';
 
-const UserTable = ({ users = [], currentUserId, onSafeSubmit }) => {
+const UserTable = ({ users = [], currentUserId }) => {
+    // Filter out admin accounts as a safety measure (backend should already filter)
+    const filteredUsers = users.filter(user => user.role !== 'admin');
+    
     return (
         <div className="overflow-hidden rounded-xl border border-surface-hover bg-surface/50 shadow-xl backdrop-blur-sm">
             <table className="min-w-full divide-y divide-surface-hover">
@@ -10,11 +13,10 @@ const UserTable = ({ users = [], currentUserId, onSafeSubmit }) => {
                         <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Coder</th>
                         <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
                         <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Points</th>
-                        <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Action</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-hover">
-                    {users.map((user, index) => {
+                    {filteredUsers.map((user, index) => {
                         const isMe = user.id === currentUserId;
                         return (
                             <tr key={user.id} className={isMe ? 'bg-primary/5 hover:bg-primary/10 transition-colors' : 'hover:bg-surface-hover/30 transition-colors'}>
@@ -44,16 +46,6 @@ const UserTable = ({ users = [], currentUserId, onSafeSubmit }) => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-secondary">
                                     {user.pointsToday}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    {isMe && !user.solvedToday && (
-                                        <button
-                                            onClick={onSafeSubmit}
-                                            className="text-primary hover:text-indigo-400 font-semibold transition-colors"
-                                        >
-                                            Safe Submit
-                                        </button>
-                                    )}
                                 </td>
                             </tr>
                         );

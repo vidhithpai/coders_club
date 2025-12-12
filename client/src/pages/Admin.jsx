@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import NavBar from '../components/NavBar';
 import { Settings, Save } from 'lucide-react';
@@ -7,6 +7,7 @@ const Admin = () => {
     const [slug, setSlug] = useState('');
     const [resetDaily, setResetDaily] = useState(false);
     const [message, setMessage] = useState('');
+    const [stats, setStats] = useState({ totalUsers: 0, submittedToday: 0 });
 
     const handleUpdate = async (e) => {
         e.preventDefault();
@@ -40,6 +41,26 @@ const Admin = () => {
         }
     };
 
+    const fetchStats = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.get('http://localhost:5000/api/admin/stats', {
+                headers: { 'x-auth-token': token }
+            });
+            setStats({
+                totalUsers: response.data.totalUsers || 0,
+                submittedToday: response.data.submittedToday || 0
+            });
+        } catch (err) {
+            console.error(err);
+            setMessage('Error fetching stats');
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
     return (
         <div className="min-h-screen bg-background text-white">
             <NavBar />
@@ -55,6 +76,18 @@ const Admin = () => {
                             {message}
                         </div>
                     )}
+
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div className="bg-gray-100 rounded-lg shadow p-4">
+                            <div className="font-semibold text-gray-700">Total Users</div>
+                            <div className="text-2xl font-bold text-blue-600">{stats.totalUsers}</div>
+                        </div>
+                        <div className="bg-gray-100 rounded-lg shadow p-4">
+                            <div className="font-semibold text-gray-700">Total Submissions Today</div>
+                            <div className="text-2xl font-bold text-blue-600">{stats.submittedToday}</div>
+                        </div>
+                    </div>
 
                     <form onSubmit={handleUpdate} className="space-y-6">
                         <div>

@@ -82,4 +82,28 @@ router.post('/reset-points', authAdmin, async (req, res) => {
     }
 });
 
+// Admin Stats: total users and submissions today
+router.get('/stats', authAdmin, async (_req, res) => {
+    try {
+        const usersSnapshot = await db.collection('users').where('role', '==', 'user').get();
+        const totalUsers = usersSnapshot.size;
+
+        const submittedSnapshot = await db.collection('users')
+            .where('role', '==', 'user')
+            .where('solvedToday', '==', true)
+            .get();
+        const submittedToday = submittedSnapshot.size;
+
+        res.json({ totalUsers, submittedToday });
+    } catch (error) {
+        const handledError = handleFirestoreError(error, 'Admin stats');
+        console.error(handledError);
+        if (error.code === 5 || error.code === 'NOT_FOUND') {
+            res.status(503).json({ error: "Firestore database not found. Please check server logs for setup instructions." });
+        } else {
+            res.status(500).json({ error: "Server error" });
+        }
+    }
+});
+
 module.exports = router;

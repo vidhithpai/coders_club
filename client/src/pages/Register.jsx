@@ -8,19 +8,29 @@ const Register = () => {
         name: '', email: '', leetcodeUsername: '', password: ''
     });
     const [error, setError] = useState('');
+    const [leetcodeUsernameError, setLeetcodeUsernameError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setLeetcodeUsernameError('');
+        
         if (!formData.email.endsWith('@mite.ac.in')) {
             setError('Please use your @mite.ac.in email address.');
             return;
         }
+        
         try {
             await axios.post('http://localhost:5000/api/auth/register', formData);
             navigate('/login');
         } catch (err) {
-            setError(err.response?.data?.error || 'Registration failed');
+            const errorMessage = err.response?.data?.error || 'Registration failed';
+            if (errorMessage === 'LeetCode username already taken.') {
+                setLeetcodeUsernameError(errorMessage);
+            } else {
+                setError(errorMessage);
+            }
         }
     };
 
@@ -62,10 +72,18 @@ const Register = () => {
                         <input
                             type="text"
                             required
-                            className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-surface-hover bg-background text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                            className={`appearance-none rounded-lg relative block w-full px-3 py-3 border ${
+                                leetcodeUsernameError ? 'border-red-500' : 'border-surface-hover'
+                            } bg-background text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent`}
                             value={formData.leetcodeUsername}
-                            onChange={(e) => setFormData({ ...formData, leetcodeUsername: e.target.value })}
+                            onChange={(e) => {
+                                setFormData({ ...formData, leetcodeUsername: e.target.value });
+                                setLeetcodeUsernameError('');
+                            }}
                         />
+                        {leetcodeUsernameError && (
+                            <p className="mt-1 text-sm text-red-500">{leetcodeUsernameError}</p>
+                        )}
                     </div>
                     <div>
                         <label className="text-xs text-gray-400 mb-1 block">Password</label>
