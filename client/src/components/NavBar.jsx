@@ -6,10 +6,16 @@ import logoImage from '../assets/logo.jpeg';
 
 export default function NavBar() {
   const navigate = useNavigate();
+
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('role');
   const nameRaw = localStorage.getItem('name') || 'Guest';
-  const name = String(nameRaw).split(' ').map(s => s ? (s[0].toUpperCase() + s.slice(1)) : '').join(' ');
+
+  // Capitalize name safely
+  const name = String(nameRaw)
+    .split(' ')
+    .map(s => (s ? s[0].toUpperCase() + s.slice(1) : ''))
+    .join(' ');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -36,13 +42,18 @@ export default function NavBar() {
         boxSizing: 'border-box',
       }}
     >
-      {/* Left: Logo + Title */}
+      {/* LEFT: Logo + Title */}
       <div
         onClick={() => navigate('/')}
-        style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          cursor: 'pointer',
+          flexShrink: 0,
+        }}
         title="Go to home"
       >
-        {/* Use your logo image: */}
         <img
           src={logoImage}
           alt="Coders Club"
@@ -51,47 +62,80 @@ export default function NavBar() {
             height: 36,
             objectFit: 'contain',
             borderRadius: 6,
-            boxShadow: '0 6px 18px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02)',
+            boxShadow:
+              '0 6px 18px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02)',
           }}
         />
-        <span style={{ color: 'var(--pixel-gold, #ffcf5b)', fontWeight: 700, fontSize: 16, letterSpacing: '0.02em', fontFamily: "'Press Start 2P', monospace" }}>
+
+        <span
+          style={{
+            color: 'var(--pixel-gold, #ffcf5b)',
+            fontWeight: 700,
+            fontSize: 16,
+            letterSpacing: '0.02em',
+            fontFamily: "'Press Start 2P', monospace",
+            whiteSpace: 'nowrap',
+          }}
+        >
           CODERS CLUB
         </span>
       </div>
 
-      {/* Right: Welcome, Admin link, Logout */}
+      {/* RIGHT: User / Auth */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 18,
-          flexShrink: 0,
+          gap: 16,
+          flexShrink: 1,
+          maxWidth: '60%',
           color: '#dbe9f5',
           fontSize: 14,
+          overflow: 'hidden',
         }}
       >
         {token ? (
           <>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1 }}>
-              <div style={{ fontFamily: 'monospace', fontSize: 15, color: '#dbe9f5' }}>
-                Welcome,&nbsp;
-                <span style={{ fontWeight: 700, textTransform: 'capitalize' }}>{name}</span>
-              </div>
+            {/* Welcome text with truncation */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                maxWidth: 220,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                fontFamily: 'monospace',
+              }}
+              title={name}
+            >
+              <span style={{ marginRight: 4 }}>Welcome,</span>
+              <span
+                style={{
+                  fontWeight: 700,
+                  textTransform: 'capitalize',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {name}
+              </span>
             </div>
 
-            {/* Admin button (visible only for admins) */}
+            {/* Admin button */}
             {role === 'admin' && (
               <button
                 onClick={() => navigate('/admin')}
                 style={{
                   background: 'transparent',
-                  border: '1px solid rgba(255,255,255,0.04)',
-                  padding: '8px 10px',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  padding: '6px 10px',
                   borderRadius: 8,
                   color: 'var(--pixel-gold, #ffcf5b)',
                   cursor: 'pointer',
                   fontFamily: "'Press Start 2P', monospace",
                   fontSize: 12,
+                  whiteSpace: 'nowrap',
                 }}
                 title="Admin Dashboard"
               >
@@ -105,7 +149,7 @@ export default function NavBar() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 8,
+                gap: 6,
                 background: 'transparent',
                 border: 'none',
                 color: '#dbe9f5',
@@ -113,7 +157,7 @@ export default function NavBar() {
                 padding: '6px 8px',
                 borderRadius: 8,
                 fontSize: 13,
-                fontFamily: 'Inter, system-ui, sans-serif',
+                whiteSpace: 'nowrap',
               }}
               title="Logout"
             >
@@ -136,10 +180,12 @@ export default function NavBar() {
             >
               Login
             </button>
+
             <button
               onClick={() => navigate('/register')}
               style={{
-                background: 'linear-gradient(90deg, var(--accent, #14e1ea), #0fd1d9)',
+                background:
+                  'linear-gradient(90deg, var(--accent, #14e1ea), #0fd1d9)',
                 color: 'var(--deep-navy, #06121a)',
                 padding: '8px 12px',
                 borderRadius: 8,
@@ -157,3 +203,4 @@ export default function NavBar() {
     </header>
   );
 }
+  

@@ -1,61 +1,118 @@
+@charset "UTF-8";
+
+/* ---------------------------------------------------
+   Google Font (pixel font)
+   NOTE: Prefer loading this in index.html if possible
+--------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ---------------------------------------------------
+   Tailwind layers
+--------------------------------------------------- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------
+   Base styles
+--------------------------------------------------- */
 @layer base {
   body {
     @apply bg-background text-white antialiased;
+    overflow-x: hidden;
   }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-surface;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-surface-hover rounded-full;
-}
-
-/* src/index.css (append or merge) */
-
-/* Pixel font from Google - Press Start 2P for that retro pixel look */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-/* Main app background color and foreground */
-:root{
-  --app-bg: #0b1621;         /* deep navy/near black bg */
-  --card-bg: rgba(17,25,36,0.95); /* dark card */
-  --card-border: rgba(255,255,255,0.06);
-  --input-border: rgba(255,255,255,0.06);
-  --accent: #14e1ea;        /* cyan accent */
+/* ---------------------------------------------------
+   CSS variables
+--------------------------------------------------- */
+:root {
+  --app-bg: #0b1621;
+  --card-bg: rgba(17, 25, 36, 0.95);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 255, 255, 0.06);
+  --accent: #14e1ea;
   --pixel-gold: #ffcf5b;
-  --muted: rgba(255,255,255,0.35);
+  --muted: rgba(255, 255, 255, 0.35);
   --deep-navy: #06121a;
+
+  --topbar-h: 64px;
 }
 
-/* helper classes used by component */
-.bg-app-bg { background-color: var(--app-bg); min-height: 100vh; }
-.bg-card-bg { background-color: var(--card-bg); }
-.border-card-border { border-color: var(--card-border); }
-.border-b-input { border-bottom-color: var(--input-border); }
-.text-pixel-gold { color: var(--pixel-gold); }
-.text-deep-navy { color: var(--deep-navy); }
-.text-muted { color: var(--muted); }
-.bg-accent { background-color: var(--accent); }
-.border-b-accent { border-bottom-color: var(--accent); }
-.pixel-font { font-family: 'Press Start 2P', cursive; letter-spacing: 0.04em; }
+/* Mobile navbar height */
+@media (max-width: 640px) {
+  :root {
+    --topbar-h: 72px;
+  }
+}
 
-/* subtle shadow on card */
+/* ---------------------------------------------------
+   App background helpers
+--------------------------------------------------- */
+.bg-app-bg {
+  background-color: var(--app-bg);
+  min-height: 100vh;
+  min-height: 100svh; /* mobile-safe viewport */
+}
+
+.bg-card-bg {
+  background-color: var(--card-bg);
+}
+
+.border-card-border {
+  border-color: var(--card-border);
+}
+
+.border-b-input {
+  border-bottom-color: var(--input-border);
+}
+
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.border-b-accent {
+  border-bottom-color: var(--accent);
+}
+
+.text-pixel-gold {
+  color: var(--pixel-gold);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+.text-deep-navy {
+  color: var(--deep-navy);
+}
+
+/* ---------------------------------------------------
+   Pixel font (USE SPARINGLY)
+--------------------------------------------------- */
+.pixel-font {
+  font-family: 'Press Start 2P', cursive;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .pixel-font {
+    letter-spacing: 0.02em;
+    font-size: 0.85em;
+  }
+}
+
+/* ---------------------------------------------------
+   Card shadow
+--------------------------------------------------- */
 .shadow-card {
-  box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+  box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
 }
 
-/* particles background (soft blobs) */
+/* ---------------------------------------------------
+   Particle background
+--------------------------------------------------- */
 .bg-particles {
   background-image:
     radial-gradient(ellipse at 20% 20%, rgba(255,200,104,0.03) 0px, transparent 40px),
@@ -68,44 +125,66 @@
   filter: blur(6px);
 }
 
-/* small responsive tweaks */
-@media (max-width: 640px) {
-  .w-40 { width: 9rem; height: 9rem; } /* make logo smaller on mobile */
-  .rounded-2xl { border-radius: 12px; }
+/* ---------------------------------------------------
+   Custom scrollbar
+--------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
+::-webkit-scrollbar-track {
+  background-color: var(--deep-navy);
+}
 
-/* ------------------------------------------------------------------
-   Force topbar to the very top and make sure page content sits below
-   ------------------------------------------------------------------ */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
 
-   .app-topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 64px;                 /* change if your topbar is taller */
-    background: linear-gradient(180deg, rgba(6,14,20,0.96), rgba(10,18,25,0.97));
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    z-index: 9999;                /* very high so nothing covers it */
-  }
-  
-  /* Page container helper ensures main content starts below the fixed navbar */
-  .page-container {
-    padding-top: 96px;            /* 64px topbar + ~32px breathing room */
-    padding-left: 28px;
-    padding-right: 28px;
-    padding-bottom: 48px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  /* small screens: reduce top padding so mobile looks OK */
-  @media (max-width: 640px) {
-    .page-container { padding-top: 84px; }
+/* ---------------------------------------------------
+   Fixed topbar
+--------------------------------------------------- */
+.app-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-h);
+  background: linear-gradient(
+    180deg,
+    rgba(6, 14, 20, 0.96),
+    rgba(10, 18, 25, 0.97)
+  );
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 9999;
+}
+
+/* ---------------------------------------------------
+   Page container (content below navbar)
+--------------------------------------------------- */
+.page-container {
+  padding-top: calc(var(--topbar-h) + 24px);
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------
+   Custom mobile helpers (SAFE — no Tailwind override)
+--------------------------------------------------- */
+@media (max-width: 640px) {
+  .logo-mobile {
+    width: 9rem;
+    height: 9rem;
   }
 
+  .rounded-mobile {
+    border-radius: 12px;
+  }
+}
